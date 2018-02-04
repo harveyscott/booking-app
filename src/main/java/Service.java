@@ -1,10 +1,13 @@
 package main.java;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+@org.springframework.stereotype.Service
 public class Service {
 
     public Booking Validate(Booking booking) {
@@ -27,8 +30,8 @@ public class Service {
         return repository.getTableBookingsByDate((String) input.get("date"));
     }
 
-    public ArrayList<RestaurantTables> getTables(LinkedHashMap input) {
-        return repository.getTables((Integer) input.get("seats"));
+    public ArrayList<RestaurantTables> getTables(int guests) {
+        return repository.getTables(guests);
     }
 
     public ArrayList filterTables(ArrayList<RestaurantTables> tables, ArrayList<BookingInfo> bookings) {
@@ -38,5 +41,6 @@ public class Service {
         return null;
     }
 
+    @Autowired
     private Repository repository;
 }

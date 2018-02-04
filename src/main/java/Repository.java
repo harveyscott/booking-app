@@ -5,14 +5,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import main.java.RestaurantTables;
+import org.springframework.beans.factory.annotation.Autowired;
 
+@org.springframework.stereotype.Repository
 public class Repository {
     private Map<String, String> connectionCred = new HashMap();
 
     public Repository(){
-        connectionCred.put("url", "jdbc:mysql://localhost:3306/javabase");
-        connectionCred.put("username", "java");
-        connectionCred.put("password", "password");
+        connectionCred.put("url", "jdbc:mysql://localhost:3306/booking-app");
+        connectionCred.put("username", "root");
+        connectionCred.put("password", "");
     }
 
     public void connectToDatabase(){
@@ -55,14 +57,17 @@ public class Repository {
     public ArrayList<RestaurantTables> getTables(Integer numberOfSeats){
 
         String query = "SELECT * FROM `restauranttables` WHERE `seats` = " + numberOfSeats;
+        ArrayList<RestaurantTables> tables = new ArrayList<>();
         try {
-            ArrayList<RestaurantTables> tables = new ArrayList<>();
+
             Connection connection = DriverManager.getConnection(connectionCred.get("url"), connectionCred.get("username"), connectionCred.get("password"));
             Statement statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query);
             while (rs.next()){
+//              I don't know why this works the way it does help me Jesus
                 RestaurantTables newTable = new RestaurantTables();
                 newTable.setSeats(rs.getInt("seats"));
+                tables.add(newTable);
                 newTable.setTableID(rs.getInt("tableID"));
             }
 
@@ -70,8 +75,6 @@ public class Repository {
             e.printStackTrace();
         }
 
-        return null;
+        return tables;
     }
-
-
 }
