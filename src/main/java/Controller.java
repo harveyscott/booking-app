@@ -1,9 +1,11 @@
 package main.java;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -13,16 +15,6 @@ import java.util.Date;
 
 @RestController
 public class Controller {
-
-//    @RequestMapping(method = RequestMethod.POST, value = "/getTables")
-//    public @ResponseBody
-//    String getTables(@RequestBody LinkedHashMap input) throws ParseException {
-//        service.getTables(input);
-//        service.getTableBookingsByDate(input);
-//
-//        // TODO a service that filters the table by the seat
-//        return null;
-//    }
 
     @RequestMapping(method = RequestMethod.GET, value = "/test")
     public String getTest() {
@@ -49,6 +41,14 @@ public class Controller {
         String json = new Gson().toJson(rt);
         return json;
     }
+
+    @RequestMapping(value = "/getDates", produces = "application/json", method = RequestMethod.GET)
+    public String getDates() {
+        ArrayList<String> dl = service.daysList();
+        String json = new Gson().toJson(dl);
+        return json;
+    }
+
 
     @Autowired
     private Service service;
