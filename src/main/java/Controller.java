@@ -2,10 +2,7 @@ package main.java;
 
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -49,6 +46,14 @@ public class Controller {
         return json;
     }
 
+    @RequestMapping(value = "/postBooking", produces = "application/json", method = RequestMethod.POST)
+    public String postBooking (
+            @RequestParam("table") String tableID,
+            @RequestParam("date") String date,
+            @RequestParam("time") String time
+    ) {
+        return null;
+    }
 
     @Autowired
     private Service service;
