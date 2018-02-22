@@ -52,7 +52,8 @@ public class Controller {
             @RequestParam("date") String date,
             @RequestParam("time") String time
     ) {
-        return null;
+        String json = null;
+        return json;
     }
 
     @Autowired

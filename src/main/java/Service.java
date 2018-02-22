@@ -10,22 +10,6 @@ import java.util.*;
 @org.springframework.stereotype.Service
 public class Service {
 
-    public Booking Validate(Booking booking) {
-        // Validate Booking and that Time is free
-
-        // Create a validation exception
-        return booking;
-    }
-
-    public Booking ParseBooking(LinkedHashMap input) throws ParseException {
-        Booking newBook = new Booking();
-        newBook.setName((String) input.get("name"));
-        newBook.setEmail((String) input.get("email"));
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        newBook.setDate(sdf.parse((String) input.get("date")));
-        return newBook;
-    }
-
     public ArrayList<BookingInfo> getTableBookingsByDate(LinkedHashMap input){
         return repository.getTableBookingsByDate((String) input.get("date"));
     }
@@ -34,16 +18,33 @@ public class Service {
         return repository.getTables(guests);
     }
 
-    public ArrayList filterTables(ArrayList<RestaurantTables> tables, ArrayList<BookingInfo> bookings) {
+    public Map filterTables(ArrayList<RestaurantTables> tables, String date) {
         // You have the list of tables that the user can choose from, from the get table method
         // Use the get bookings method to retrieve all the bookings on that date
         // Look through each table list the times that it is available
         // Show what times are available
+        Map finalTables= null;
 
-        for (RestaurantTables table: tables) {
+        // Get a list of all the bookings on that date.
+        ArrayList<BookingInfo> tableBookings = repository.getTableBookingsByDate(date);
 
+        for (RestaurantTables restaurantTables: tables) {
+            ArrayList<String> hours = new ArrayList();
+            finalTables.put(restaurantTables.getTableID(), hours);
         }
-        return null;
+
+        for (int i = 0; i <= tableBookings.size(); i++) {
+            int tableID = tableBookings.get(i).getTableID();
+            String hours = tableBookings.get(i).getHours();
+
+            assert finalTables != null;
+            if (finalTables.containsKey(tableID)) {
+                ArrayList hoursList = (ArrayList) finalTables.get(tableID);
+                hoursList.add(hours);
+                finalTables.put(tableID, hoursList);
+            }
+        }
+        return finalTables;
     }
 
     private Map<String, ArrayList<Integer>> openingHours() {
@@ -63,7 +64,7 @@ public class Service {
         // TODO get possible special events and add them to the days
 
         // Get the next day as it is the first possible day you can make a booking
-//      Loop will have to check if the day is not an event
+        // Loop will have to check if the day is not an event
         DateTime tomorrow = new DateTime().plusDays(1);
         if (!tomorrow.dayOfWeek().getAsText().equals("Monday") && !tomorrow.dayOfWeek().getAsText().equals("Tuesday")) {
             days.add(tomorrow.dayOfMonth().getAsText() + "/" + tomorrow.monthOfYear().getAsString() + "/" + tomorrow.year().getAsText());
