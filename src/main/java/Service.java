@@ -86,6 +86,11 @@ public class Service {
         return days;
     }
 
+    public void addBooking(Booking booking, BookingInfo bookingInfo) {
+        repository.addBooking(booking);
+        repository.addBookingInfo(bookingInfo);
+    }
+
 
     @Autowired
     private Repository repository;

@@ -25,7 +25,11 @@ public class Repository {
         }
     }
 
-    public void addBooking() {
+    public void addBooking(Booking booking) {
+
+    }
+
+    public void addBookingInfo(BookingInfo bookingInfo) {
 
     }
 

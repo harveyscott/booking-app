@@ -6,11 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Map;
 
 @RestController
@@ -40,23 +36,25 @@ public class Controller {
         return json;
     }
 
-    @RequestMapping(value = "/postBooking", produces = "application/json", method = RequestMethod.POST)
-    public String postBooking (
-            @RequestParam("table") String tableID,
-            @RequestParam("date") String date,
-            @RequestParam("time") String time
+    @RequestMapping(value = "/postBooking", method = RequestMethod.POST)
+    public ResponseEntity postBooking (
+            @RequestBody BookingWrapper request
     ) {
-        String json = null;
-        return json;
+        Booking booking = request.getBooking();
+        BookingInfo bookingInfo = request.getBookingInfo();
+        service.addBooking(booking, bookingInfo);
+
+        // Service requests to validate here. Probably...most likely...maybe not
+        return new ResponseEntity(HttpStatus.CREATED);
+
     }
 
     @RequestMapping(value = "/postTest", method = RequestMethod.POST)
     public ResponseEntity<Booking> postTest(
             @RequestBody BookingWrapper request
     ) {
-//        Booking testBook = request.getBooking();
-//        return new ResponseEntity<>(testBook, HttpStatus.OK);
-        return null;
+        Booking testBook = request.getBooking();
+        return new ResponseEntity<>(testBook, HttpStatus.OK);
     }
 
     @Autowired
