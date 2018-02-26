@@ -2,6 +2,8 @@ package main.java;
 
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.DateFormat;
@@ -9,6 +11,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 
 @RestController
 public class Controller {
@@ -24,18 +27,9 @@ public class Controller {
             @RequestParam(value = "date", required = false) String dateInput
     ) {
         int guests = Integer.parseInt(guestsInput);
-        DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
-        Date date;
-        try {
-            date = df.parse(dateInput);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
         ArrayList<RestaurantTables> rt = service.getTables(guests);
-
-
-        String json = new Gson().toJson(rt);
+        Map restaurantMap = service.filterTables(rt, dateInput);
+        String json = new Gson().toJson(restaurantMap);
         return json;
     }
 
@@ -54,6 +48,15 @@ public class Controller {
     ) {
         String json = null;
         return json;
+    }
+
+    @RequestMapping(value = "/postTest", method = RequestMethod.POST)
+    public ResponseEntity<Booking> postTest(
+            @RequestBody BookingWrapper request
+    ) {
+//        Booking testBook = request.getBooking();
+//        return new ResponseEntity<>(testBook, HttpStatus.OK);
+        return null;
     }
 
     @Autowired

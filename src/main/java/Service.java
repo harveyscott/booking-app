@@ -23,7 +23,7 @@ public class Service {
         // Use the get bookings method to retrieve all the bookings on that date
         // Look through each table list the times that it is available
         // Show what times are available
-        Map finalTables= null;
+        Map <Integer, ArrayList<String>> finalTables = new HashMap<>();
 
         // Get a list of all the bookings on that date.
         ArrayList<BookingInfo> tableBookings = repository.getTableBookingsByDate(date);
@@ -33,13 +33,18 @@ public class Service {
             finalTables.put(restaurantTables.getTableID(), hours);
         }
 
-        for (int i = 0; i <= tableBookings.size(); i++) {
-            int tableID = tableBookings.get(i).getTableID();
-            String hours = tableBookings.get(i).getHours();
+        if (tableBookings.isEmpty())
+        {
+            return finalTables;
+        }
+
+        for (BookingInfo tableBooking : tableBookings) {
+            int tableID = tableBooking.getTableID();
+            String hours = tableBooking.getHours();
 
             assert finalTables != null;
             if (finalTables.containsKey(tableID)) {
-                ArrayList hoursList = (ArrayList) finalTables.get(tableID);
+                ArrayList hoursList = finalTables.get(tableID);
                 hoursList.add(hours);
                 finalTables.put(tableID, hoursList);
             }

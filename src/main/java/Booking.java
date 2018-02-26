@@ -2,14 +2,11 @@ package main.java;
 
 import java.util.Date;
 
-public class Booking {
+public class Booking{
     private String name;
     private Date date;
     private String email;
-
-    public Booking() {
-
-    }
+    private String phoneNumber;
 
     public String getEmail() {
         return email;
@@ -23,6 +20,10 @@ public class Booking {
         return name;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
     public void setDate(Date date) {
         this.date = date;
     }
@@ -33,5 +34,9 @@ public class Booking {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }
