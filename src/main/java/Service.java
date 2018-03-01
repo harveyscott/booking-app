@@ -2,9 +2,6 @@ package main.java;
 
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @org.springframework.stereotype.Service
@@ -87,7 +84,19 @@ public class Service {
     }
 
     public void addBooking(Booking booking, BookingInfo bookingInfo) {
-        repository.addBooking(booking);
+        // Validate booking info here !!!!!!!
+        // Add booking to the repo
+        repository.addBooking(booking, bookingInfo);
+
+
+        // Add the date to the booking object
+        bookingInfo.setDate(booking.getDateString());
+        // Retrieve the ID for the booking object to put into this table in the database
+        int bookingID = repository.retrieveBookingID(booking);
+        bookingInfo.setBookingID(bookingID);
+        assert bookingInfo.getBookingID() > 0;
+
+        // Add booking Info to database
         repository.addBookingInfo(bookingInfo);
     }
 

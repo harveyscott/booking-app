@@ -4,7 +4,6 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.Locale;
 
 public class BookingInfo {

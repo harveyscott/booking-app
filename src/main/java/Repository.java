@@ -4,8 +4,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import main.java.RestaurantTables;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @org.springframework.stereotype.Repository
 public class Repository {
@@ -25,11 +23,46 @@ public class Repository {
         }
     }
 
-    public void addBooking(Booking booking) {
+    public void addBooking(Booking booking, BookingInfo bookingInfo) {
+        Statement stmt;
+        String query = "INSERT INTO `booking` (`ID`, `Name`, `numOfGuest`, `Date`, `Email`, `hour`) VALUES (NULL, '" + booking.getName() + "', '" + booking.getNumOfGuests() + "', '" + booking.getDateString() +"', '" + booking.getEmail() + "', '" + bookingInfo.getHours() +"')";
+        try {
+            Connection connection = DriverManager.getConnection(connectionCred.get("url"), connectionCred.get("username"), connectionCred.get("password"));
+            stmt = connection.createStatement();
+            stmt.executeUpdate(query);
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect to database!", e);
+        }
+    }
 
+    public int retrieveBookingID(Booking booking) {
+        int bookingID = 0;
+        Statement stmt;
+        String query = "SELECT `ID` FROM `booking` WHERE `Date`= '" + booking.getDateString() + "' AND `Email` = '" + booking.getEmail() + "'";
+        try {
+            Connection connection = DriverManager.getConnection(connectionCred.get("url"), connectionCred.get("username"), connectionCred.get("password"));
+            stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                bookingID = rs.getInt("bookingID");
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect to database", e);
+        }
+
+        return bookingID;
     }
 
     public void addBookingInfo(BookingInfo bookingInfo) {
+        Statement stmt;
+        String query = "INSERT INTO `bookingrestauranttables` (`bookingtableID`, `tableID`, `bookingID`, `hours`, `date`, `canceled`) VALUES (NULL, '" + bookingInfo.getTableID() + "', '" + bookingInfo.getBookingID() + "', '" + bookingInfo.getHours() +"', '" + bookingInfo.getDate() +"', '0')";
+        try {
+            Connection connection = DriverManager.getConnection(connectionCred.get("URL"), connectionCred.get("username"), connectionCred.get("password"));
+            stmt = connection.createStatement();
+            stmt.executeUpdate(query);
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect to database", e);
+        }
 
     }
 
