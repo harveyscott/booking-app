@@ -42,11 +42,9 @@ public class Controller {
     ) {
         Booking booking = request.getBooking();
         BookingInfo bookingInfo = request.getBookingInfo();
-        service.addBooking(booking, bookingInfo);
-
         // Service requests to validate here. Probably...most likely...maybe not
+        service.addBooking(booking, bookingInfo);
         return new ResponseEntity(HttpStatus.CREATED);
-
     }
 
     @RequestMapping(value = "/postTest", method = RequestMethod.POST)
