@@ -1,6 +1,7 @@
 package main.java;
 
 import com.google.gson.Gson;
+import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,12 +48,31 @@ public class Controller {
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/postTest", method = RequestMethod.POST)
-    public ResponseEntity<Booking> postTest(
-            @RequestBody BookingWrapper request
-    ) {
-        Booking testBook = request.getBooking();
-        return new ResponseEntity<>(testBook, HttpStatus.OK);
+    // Requires Authentication
+    @RequestMapping(value = "/modifyBooking", method = RequestMethod.POST)
+    public ResponseEntity modifyBooking (BookingInfo request) {
+        return null;
+    }
+
+    // Requires Authentication
+    @RequestMapping(value = "/deleteBooking", method = RequestMethod.DELETE)
+    public ResponseEntity deleteBooking (BookingWrapper request) {
+        return null;
+    }
+
+    @RequestMapping(value = "/getBookingsByDate", method = RequestMethod.GET)
+    public ResponseEntity getBookingByDate( @RequestParam String Date) {
+        return null;
+    }
+
+    @RequestMapping(value = "/getTableLayout", method = RequestMethod.GET)
+    public ResponseEntity getTableLayout ( @RequestParam String Date) {
+        return null;
+    }
+
+    @RequestMapping(value = "/postTableLayout", method = RequestMethod.POST)
+    public ResponseEntity postTableLayout(@RequestParam Object obj) {
+        return null;
     }
 
     @Autowired
