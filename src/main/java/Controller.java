@@ -1,7 +1,6 @@
 package main.java;
 
 import com.google.gson.Gson;
-import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,7 @@ public class Controller {
     @RequestMapping(value = "/getTables", produces = "application/json", method = RequestMethod.GET)
     public String getTables(
             @RequestParam(value = "guests", required = true) String guestsInput,
-            @RequestParam(value = "date", required = false) String dateInput
+            @RequestParam(value = "date", required = true) String dateInput
     ) {
         int guests = Integer.parseInt(guestsInput);
         ArrayList<RestaurantTables> rt = service.getTables(guests);
@@ -31,10 +30,10 @@ public class Controller {
     }
 
     @RequestMapping(value = "/getDates", produces = "application/json", method = RequestMethod.GET)
-    public String getDates() {
+    public ArrayList<String> getDates() {
         ArrayList<String> dl = service.daysList();
         String json = new Gson().toJson(dl);
-        return json;
+        return dl;
     }
 
     @RequestMapping(value = "/postBooking", method = RequestMethod.POST)

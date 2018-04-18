@@ -69,14 +69,14 @@ public class Service {
         // Loop will have to check if the day is not an event
         DateTime tomorrow = new DateTime().plusDays(1);
         if (!tomorrow.dayOfWeek().getAsText().equals("Monday") && !tomorrow.dayOfWeek().getAsText().equals("Tuesday")) {
-            days.add(tomorrow.dayOfMonth().getAsText() + "/" + tomorrow.monthOfYear().getAsString() + "/" + tomorrow.year().getAsText());
+            days.add(tomorrow.year().getAsText() + "-" + tomorrow.monthOfYear().getAsString() + "-" + tomorrow.dayOfMonth().getAsText());
         }
         // create a loop that will run the next three weeks of dates and add them to an array
 
         for (int i=1; i<22; i++) {
             DateTime dateCount = tomorrow.plusDays(i);
             if (!dateCount.dayOfWeek().getAsText().equals("Monday") && !dateCount.dayOfWeek().getAsText().equals("Tuesday")) {
-                days.add(dateCount.dayOfMonth().getAsText() + "/" + dateCount.monthOfYear().getAsString() + "/" + dateCount.year().getAsText());
+                days.add(dateCount.year().getAsText() + "-" + dateCount.monthOfYear().getAsString() + "-" + dateCount.dayOfMonth().getAsText());
             }
         }
 
@@ -86,7 +86,7 @@ public class Service {
     public void addBooking(Booking booking, BookingInfo bookingInfo) {
         // Validate booking info here !!!!!!!
         // Add booking to the repo
-        repository.addBooking(booking, bookingInfo);
+        //repository.addBooking(booking, bookingInfo);
 
 
         // Add the date to the booking object
