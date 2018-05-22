@@ -46,24 +46,88 @@ public class Service {
                 finalTables.put(tableID, hoursList);
             }
         }
+
+        // we take final tables and fill each table with free bookings spaces
+        for (Integer key: finalTables.keySet()) {
+            if (finalTables.get(key).isEmpty()) {
+                // If the table has no bookings add all the possible times a user can have.
+                finalTables.get(key).addAll(bookingHours(null));
+            } else {
+                ArrayList<Double> bookingtimes = new ArrayList<>();
+
+                for (String time: finalTables.get(key)) {
+                    Double timeToAdd = Double.parseDouble(time);
+                    bookingtimes.add(timeToAdd);
+                }
+                finalTables.get(key).clear();
+                finalTables.get(key).addAll(bookingHours(bookingtimes));
+            }
+        }
+
         return finalTables;
     }
 
-    private Map<String, ArrayList<Integer>> openingHours() {
-        ArrayList<Integer> wednesdayToFriday = new ArrayList<>(Arrays.asList(12,13,14,15,18,19,20,21));
-        ArrayList<Integer> saturdaySunday = new ArrayList<>(Arrays.asList(12,13,14,15,16,17,18,19,20,21));
-        Map<String, ArrayList<Integer>> openingHours = null;
-        openingHours.put("Wednesday", wednesdayToFriday);
-        openingHours.put("Thursday", wednesdayToFriday);
-        openingHours.put("Friday", wednesdayToFriday);
-        openingHours.put("Saturday", saturdaySunday);
-        openingHours.put("Sunday", saturdaySunday);
-        return openingHours;
+    private ArrayList<String> bookingHours(ArrayList<Double> times) {
+        ArrayList<String> hours = new ArrayList<String>(Arrays.asList("4", "4.30", "5", "5.30", "6", "6.30", "7", "7.30", "8", "8.30", "9", "9.30"));
+        if (times == null) {
+           return hours;
+        }
+
+
+        // Add the hours to a set
+        Set<Double> hoursSet = new HashSet<>();
+        for (String stringTimeSlot: hours) {
+            hoursSet.add(Double.parseDouble(stringTimeSlot));
+        }
+
+        // Want to not allow a user to book for a time too close
+        // Create a set with all the times a user cannot choose
+        Set<Double> takenTimes = new HashSet<>(times);
+        // Add a half hour offset
+        for (Double doubleTimeSlot: times) {
+            if ((doubleTimeSlot % 1) == 0) {
+                double halfHourOffsetForward = doubleTimeSlot + .30;
+                if (halfHourOffsetForward < 9.3) {
+                    takenTimes.add(halfHourOffsetForward);
+                }
+
+                double halfHourOffsetBack = doubleTimeSlot - .70;
+                if (halfHourOffsetBack > 4) {
+                    takenTimes.add(halfHourOffsetBack);
+                }
+            } else {
+                double halfHourOffsetForward = doubleTimeSlot + .70;
+                if (halfHourOffsetForward < 9.3) {
+                    takenTimes.add(halfHourOffsetForward);
+                }
+
+                double halfHourOffsetBack = doubleTimeSlot - .30;
+                if (halfHourOffsetBack > 4) {
+                    takenTimes.add(halfHourOffsetBack);
+                }
+            }
+
+        }
+
+        for (Double timeTaken: takenTimes) {
+            hoursSet.remove(timeTaken);
+        }
+
+        List<Double> sortedHours = new ArrayList(hoursSet);
+        Collections.sort(sortedHours);
+
+        ArrayList<String> modifiedHours = new ArrayList<>();
+        // Parse back into a string
+        for (Double finalTime: sortedHours) {
+            modifiedHours.add(String.valueOf(finalTime));
+        }
+
+        return modifiedHours;
+
     }
 
     public ArrayList<String> daysList() {
         ArrayList<String> days = new ArrayList<>();
-        // TODO get possible special events and add them to the days
 
         // Get the next day as it is the first possible day you can make a booking
         // Loop will have to check if the day is not an event
@@ -84,11 +148,8 @@ public class Service {
     }
 
     public void addBooking(Booking booking, BookingInfo bookingInfo) {
-        // Validate booking info here !!!!!!!
-        // Add booking to the repo
-        //repository.addBooking(booking, bookingInfo);
 
-
+        repository.addBooking(booking, bookingInfo);
         // Add the date to the booking object
         bookingInfo.setDate(booking.getDateString());
         // Retrieve the ID for the booking object to put into this table in the database
@@ -100,7 +161,31 @@ public class Service {
         repository.addBookingInfo(bookingInfo);
     }
 
+    public BookingWrapper findBooking(int bookingID, String email) {
+       return repository.findBooking(bookingID, email);
+    }
+
+    public void modifyBooking(BookingInfo bookingInfo) {
+        repository.modifyBooking(bookingInfo);
+    }
+
 
     @Autowired
     private Repository repository;
+
+
+    public ArrayList<BookingWrapper> getBookingsByDate(String date) {
+        return repository.findBookings(date);
+    }
+
+    public TableLayout getTableLayout(String date) {
+        ArrayList<TableLayout> validTableLayouts = new ArrayList<>(repository.getTableLayout(date));
+        if (validTableLayouts.size() == 1) {
+            return  validTableLayouts.get(0);
+        } else {
+
+        }
+
+        return null;
+    }
 }

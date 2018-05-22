@@ -25,7 +25,7 @@ public class Repository {
 
     public void addBooking(Booking booking, BookingInfo bookingInfo) {
         Statement stmt;
-        String query = "INSERT INTO `booking` (`ID`, `Name`, `numOfGuest`, `Date`, `Email`, `hour`) VALUES (NULL, '" + booking.getName() + "', '" + booking.getNumOfGuests() + "', '" + booking.getDateString() +"', '" + booking.getEmail() + "', '" + bookingInfo.getHours() +"')";
+        String query = "INSERT INTO `booking` (`ID`, `Name`, `numOfGuest`, `Email`, `phone`) VALUES (NULL, '" + booking.getName() + "', '" + booking.getNumOfGuests() + "', '" + booking.getEmail() +"', '" + booking.getPhoneNumber() +"')";
         try {
             Connection connection = DriverManager.getConnection(connectionCred.get("url"), connectionCred.get("username"), connectionCred.get("password"));
             stmt = connection.createStatement();
@@ -101,7 +101,6 @@ public class Repository {
             Statement statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query);
             while (rs.next()){
-//              I don't know why this works the way it does help me Jesus
                 RestaurantTables newTable = new RestaurantTables();
                 newTable.setSeats(rs.getInt("seats"));
                 tables.add(newTable);
@@ -116,6 +115,19 @@ public class Repository {
     }
 
     public ArrayList<TableLayout> getTableLayout(String date) {
+        return null;
+    }
+
+    public boolean modifyBooking(BookingInfo bookingInfo) {
+
+        return true;
+    }
+
+    public BookingWrapper findBooking(int BookingId, String email) {
+        return null;
+    }
+
+    public ArrayList<BookingWrapper> findBookings(String date) {
         return null;
     }
 }

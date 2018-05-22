@@ -12,11 +12,6 @@ import java.util.Map;
 @RestController
 public class Controller {
 
-    @RequestMapping(method = RequestMethod.GET, value = "/test")
-    public String getTest() {
-        return "This works";
-    }
-
     @RequestMapping(value = "/getTables", produces = "application/json", method = RequestMethod.GET)
     public String getTables(
             @RequestParam(value = "guests", required = true) String guestsInput,
@@ -42,35 +37,48 @@ public class Controller {
     ) {
         Booking booking = request.getBooking();
         BookingInfo bookingInfo = request.getBookingInfo();
-        // Service requests to validate here. Probably...most likely...maybe not
         service.addBooking(booking, bookingInfo);
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
     // Requires Authentication
     @RequestMapping(value = "/modifyBooking", method = RequestMethod.POST)
-    public ResponseEntity modifyBooking (BookingInfo request) {
-        return null;
-    }
+    public ResponseEntity modifyBooking (
+            @RequestBody BookingWrapper request
+    ) {
+       // Validate Booking Info
+       StringBuilder message = new StringBuilder();
+       BookingInfo bookingInfo = request.getBookingInfo();
+       Booking booking = request.getBooking();
 
-    // Requires Authentication
-    @RequestMapping(value = "/deleteBooking", method = RequestMethod.DELETE)
-    public ResponseEntity deleteBooking (BookingWrapper request) {
-        return null;
+       BookingWrapper currentBooking = service.findBooking(bookingInfo.getBookingID(),booking.getEmail());
+
+       // Validate Booking info
+       if(currentBooking != null)  {
+            service.modifyBooking(bookingInfo);
+       } else {
+           message.append("No Booking returned");
+       }
+
+       return null;
     }
 
     @RequestMapping(value = "/getBookingsByDate", method = RequestMethod.GET)
-    public ResponseEntity getBookingByDate( @RequestParam String Date) {
-        return null;
+    public ArrayList<BookingWrapper> getBookingByDate( @RequestParam String date) {
+        return new ArrayList<>(service.getBookingsByDate(date));
     }
 
     @RequestMapping(value = "/getTableLayout", method = RequestMethod.GET)
-    public ResponseEntity getTableLayout ( @RequestParam String Date) {
+    public ResponseEntity getTableLayout ( @RequestParam String date) {
+        TableLayout tableLayout = service.getTableLayout(date);
+        tableLayout.getLayout();
         return null;
     }
 
     @RequestMapping(value = "/postTableLayout", method = RequestMethod.POST)
-    public ResponseEntity postTableLayout(@RequestParam Object obj) {
+    public ResponseEntity postTableLayout(
+            @RequestBody TableLayout tableLayout
+    ) {
         return null;
     }
 
