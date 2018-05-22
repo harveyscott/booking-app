@@ -162,7 +162,9 @@ public class Service {
     }
 
     public BookingWrapper findBooking(int bookingID, String email) {
-       return repository.findBooking(bookingID, email);
+       BookingInfo bkInf = repository.findBookingInfo(bookingID);
+       Booking booking = repository.findBooking(email);
+       return null;
     }
 
     public void modifyBooking(BookingInfo bookingInfo) {
@@ -179,12 +181,6 @@ public class Service {
     }
 
     public TableLayout getTableLayout(String date) {
-        ArrayList<TableLayout> validTableLayouts = new ArrayList<>(repository.getTableLayout(date));
-        if (validTableLayouts.size() == 1) {
-            return  validTableLayouts.get(0);
-        } else {
-
-        }
 
         return null;
     }

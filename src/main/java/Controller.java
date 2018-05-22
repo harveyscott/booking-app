@@ -33,10 +33,11 @@ public class Controller {
 
     @RequestMapping(value = "/postBooking", method = RequestMethod.POST)
     public ResponseEntity postBooking (
-            @RequestBody BookingWrapper request
+            @RequestBody BookingWrapper body
     ) {
-        Booking booking = request.getBooking();
-        BookingInfo bookingInfo = request.getBookingInfo();
+        BookingWrapper bookingWrapper = body.getBookingWrapper();
+        Booking booking = bookingWrapper.getBooking();
+        BookingInfo bookingInfo = bookingWrapper.getBookingInfo();
         service.addBooking(booking, bookingInfo);
         return new ResponseEntity(HttpStatus.CREATED);
     }
@@ -49,7 +50,7 @@ public class Controller {
        // Validate Booking Info
        StringBuilder message = new StringBuilder();
        BookingInfo bookingInfo = request.getBookingInfo();
-       Booking booking = request.getBooking();
+       Booking booking = request.getBookingWrapper().getBooking();
 
        BookingWrapper currentBooking = service.findBooking(bookingInfo.getBookingID(),booking.getEmail());
 

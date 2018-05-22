@@ -123,8 +123,48 @@ public class Repository {
         return true;
     }
 
-    public BookingWrapper findBooking(int BookingId, String email) {
-        return null;
+    public BookingInfo findBookingInfo(int bookingId) {
+        // Create a bookingInfo object
+        BookingInfo bookingInfo = new BookingInfo();
+        Statement statement;
+        String query = "SELECT * FROM bookingrestauranttables WHERE bookingtableID = " + bookingId;
+        try {
+            Connection connection = DriverManager.getConnection(connectionCred.get("url"), connectionCred.get("username"), connectionCred.get("password"));
+            statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(query);
+            while (rs.next()) {
+                bookingInfo.setBookingID(rs.getInt("bookingID"));
+                bookingInfo.setTableID(rs.getInt("tableID"));
+                bookingInfo.setHours(rs.getString("hours"));
+                bookingInfo.setDate(rs.getString("date"));
+            }
+
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+        return bookingInfo;
+    }
+
+
+    public Booking findBooking(String email) {
+        // Create a bookingInfo object
+        Booking booking = new Booking();
+        Statement statement;
+        String query = "SELECT * FROM booking WHERE Email =" + email;
+        try {
+            Connection connection = DriverManager.getConnection(connectionCred.get("url"), connectionCred.get("username"), connectionCred.get("password"));
+            statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(query);
+            while (rs.next()) {
+                booking.setName(rs.getString("Name"));
+                booking.setNumOfGuests(rs.getInt("numOfGuest"));
+                booking.setEmail(rs.getString("Email"));
+            }
+
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+        return booking;
     }
 
     public ArrayList<BookingWrapper> findBookings(String date) {
