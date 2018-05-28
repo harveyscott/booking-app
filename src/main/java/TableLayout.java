@@ -1,10 +1,12 @@
 package main.java;
 
+import java.util.ArrayList;
+
 public class TableLayout {
     private int layoutID;
     private String layoutName;
     private String layoutDate;
-    private String layout;
+    private ArrayList layout;
     private boolean layoutInUse;
 
     public boolean isLayoutInUse() {
@@ -15,7 +17,7 @@ public class TableLayout {
         return layoutID;
     }
 
-    public String getLayout() {
+    public ArrayList getLayout() {
         return layout;
     }
 
@@ -27,7 +29,7 @@ public class TableLayout {
         return layoutDate;
     }
 
-    public void setLayout(String layout) {
+    public void setLayout(ArrayList layout) {
         this.layout = layout;
     }
 

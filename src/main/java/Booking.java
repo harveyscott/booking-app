@@ -7,7 +7,7 @@ import java.util.Date;
 public class Booking{
     private String name;
     private int numOfGuests;
-    private Date date;
+//    private Date date;
     private String email;
     private String phoneNumber;
 
@@ -15,14 +15,14 @@ public class Booking{
         return email;
     }
 
-    public Date getDate() {
-        return date;
-    }
+//    public Date getDate() {
+//        return date;
+//    }
 
-    public String getDateString() {
-        Format formatter = new SimpleDateFormat("yyyy-MM-dd");
-        return formatter.format(date);
-    }
+//    public String getDateString() {
+//        Format formatter = new SimpleDateFormat("yyyy-MM-dd");
+//        return formatter.format(date);
+//    }
 
     public String getName() {
         return name;
@@ -36,9 +36,9 @@ public class Booking{
         return numOfGuests;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
-    }
+//    public void setDate(Date date) {
+//        this.date = date;
+//    }
 
     public void setEmail(String email) {
         this.email = email;

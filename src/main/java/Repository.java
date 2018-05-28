@@ -35,16 +35,16 @@ public class Repository {
         }
     }
 
-    public int retrieveBookingID(Booking booking) {
+    public int retrieveBookingID(Booking bookingObj) {
         int bookingID = 0;
         Statement stmt;
-        String query = "SELECT `ID` FROM `booking` WHERE `Date`= '" + booking.getDateString() + "' AND `Email` = '" + booking.getEmail() + "'";
+        String query = "SELECT ID FROM booking WHERE Name = '" + bookingObj.getName() + "' AND Email = " + "'" + bookingObj.getEmail() +"'";
         try {
             Connection connection = DriverManager.getConnection(connectionCred.get("url"), connectionCred.get("username"), connectionCred.get("password"));
             stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
-                bookingID = rs.getInt("bookingID");
+                bookingID = rs.getInt("ID");
             }
         } catch (SQLException e) {
             throw new IllegalStateException("Cannot connect to database", e);
@@ -57,7 +57,7 @@ public class Repository {
         Statement stmt;
         String query = "INSERT INTO `bookingrestauranttables` (`bookingtableID`, `tableID`, `bookingID`, `hours`, `date`, `canceled`) VALUES (NULL, '" + bookingInfo.getTableID() + "', '" + bookingInfo.getBookingID() + "', '" + bookingInfo.getHours() +"', '" + bookingInfo.getDate() +"', '0')";
         try {
-            Connection connection = DriverManager.getConnection(connectionCred.get("URL"), connectionCred.get("username"), connectionCred.get("password"));
+            Connection connection = DriverManager.getConnection(connectionCred.get("url"), connectionCred.get("username"), connectionCred.get("password"));
             stmt = connection.createStatement();
             stmt.executeUpdate(query);
         } catch (SQLException e) {
@@ -114,8 +114,22 @@ public class Repository {
         return tables;
     }
 
-    public ArrayList<TableLayout> getTableLayout(String date) {
-        return null;
+    public String getTableLayout() {
+        String layout = "";
+        Statement stmt;
+        String query = "SELECT Layout FROM tablelayout";
+        try {
+            Connection connection = DriverManager.getConnection(connectionCred.get("url"), connectionCred.get("username"), connectionCred.get("password"));
+            stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next())
+            {
+                layout = (rs.getString("Layout"));
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot connect the database!", e);
+        }
+        return layout;
     }
 
     public boolean modifyBooking(BookingInfo bookingInfo) {
@@ -127,7 +141,7 @@ public class Repository {
         // Create a bookingInfo object
         BookingInfo bookingInfo = new BookingInfo();
         Statement statement;
-        String query = "SELECT * FROM bookingrestauranttables WHERE bookingtableID = " + bookingId;
+        String query = "SELECT * FROM bookingrestauranttables WHERE bookingtableID = '" + bookingId + "' AND canceled = 0";
         try {
             Connection connection = DriverManager.getConnection(connectionCred.get("url"), connectionCred.get("username"), connectionCred.get("password"));
             statement = connection.createStatement();
@@ -146,28 +160,108 @@ public class Repository {
     }
 
 
-    public Booking findBooking(String email) {
+    public int verifyBooking(String email) {
         // Create a bookingInfo object
-        Booking booking = new Booking();
+        int bookingID = 0;
         Statement statement;
-        String query = "SELECT * FROM booking WHERE Email =" + email;
+        String query = "SELECT ID FROM booking WHERE Email = '" + email + "'";
         try {
             Connection connection = DriverManager.getConnection(connectionCred.get("url"), connectionCred.get("username"), connectionCred.get("password"));
             statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query);
             while (rs.next()) {
-                booking.setName(rs.getString("Name"));
-                booking.setNumOfGuests(rs.getInt("numOfGuest"));
-                booking.setEmail(rs.getString("Email"));
+                bookingID = rs.getInt("ID");
             }
 
         } catch (SQLException e) {
             throw new IllegalStateException("Cannot connect the database!", e);
         }
-        return booking;
+        return bookingID;
     }
 
-    public ArrayList<BookingWrapper> findBookings(String date) {
-        return null;
+    public ArrayList<BookingInfo> findBookings(String date) {
+        ArrayList<BookingInfo> bookingInfoArrayList = new ArrayList<>();
+        Statement statement;
+        String query = "SELECT * FROM bookingrestauranttables WHERE date = '" + date +"'";
+        try {
+            Connection connection = DriverManager.getConnection(connectionCred.get("url"), connectionCred.get("username"), connectionCred.get("password"));
+            statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(query);
+            while (rs.next()) {
+                BookingInfo bookingInfo = new BookingInfo();
+                bookingInfo.setBookingID(rs.getInt("bookingID"));
+                bookingInfo.setTableID(rs.getInt("tableID"));
+                bookingInfo.setHours(rs.getString("hours"));
+                bookingInfo.setCanceled(rs.getBoolean("canceled"));
+                bookingInfoArrayList.add(bookingInfo);
+            }
+        } catch (SQLException e) {
+            return bookingInfoArrayList;
+        }
+        return bookingInfoArrayList;
+    }
+
+    public int retrieveBookingTablesID(BookingInfo bookingInfo) {
+        Integer id = bookingInfo.getBookingID();
+        int bookingTableID = 0;
+        Statement statement;
+        String query = "SELECT bookingtableID FROM bookingrestauranttables WHERE bookingID = '" + id + "'";
+        try {
+            Connection connection = DriverManager.getConnection(connectionCred.get("url"), connectionCred.get("username"), connectionCred.get("password"));
+            statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(query);
+            while (rs.next()) {
+                bookingTableID = rs.getInt("bookingTableID");
+            }
+        } catch (SQLException e) {
+            return 0;
+        }
+        return bookingTableID;
+    }
+
+    public boolean cancelBooking(int id) {
+        Statement statement;
+        String query = "UPDATE bookingrestauranttables SET canceled = 1 WHERE bookingtableID = "+ id + "";
+        try {
+            Connection connection = DriverManager.getConnection(connectionCred.get("url"), connectionCred.get("username"), connectionCred.get("password"));
+            statement = connection.createStatement();
+            statement.executeUpdate(query);
+        } catch (SQLException e) {
+            return false;
+        }
+        return true;
+    }
+
+    public Booking findCustomerDetails(BookingInfo info) {
+        Booking bookingToReturn = new Booking();
+        Statement statement;
+        String query = "SELECT * FROM booking WHERE ID = '" + info.getBookingID() + "'";
+        try {
+            Connection connection = DriverManager.getConnection(connectionCred.get("url"), connectionCred.get("username"), connectionCred.get("password"));
+            statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(query);
+            while (rs.next()) {
+                bookingToReturn.setName(rs.getString("Name"));
+                bookingToReturn.setPhoneNumber(rs.getString("phone"));
+                bookingToReturn.setNumOfGuests(rs.getInt("NumOfGuest"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return bookingToReturn;
+    }
+
+    public Boolean postTableLayout(TableLayout tableLayout) {
+        Statement statement;
+        String query = "INSERT INTO tablelayout (LayoutDate, Layout) VALUES (\""+ tableLayout.getLayoutDate() +"\", '" + tableLayout.getLayout() + "')";
+        try {
+            Connection connection = DriverManager.getConnection(connectionCred.get("url"), connectionCred.get("username"), connectionCred.get("password"));
+            statement = connection.createStatement();
+            statement.executeUpdate(query);
+        } catch (SQLException e) {
+            return false;
+        }
+        return true;
     }
 }

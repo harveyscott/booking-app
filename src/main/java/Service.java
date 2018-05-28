@@ -30,11 +30,6 @@ public class Service {
             finalTables.put(restaurantTables.getTableID(), hours);
         }
 
-        if (tableBookings.isEmpty())
-        {
-            return finalTables;
-        }
-
         for (BookingInfo tableBooking : tableBookings) {
             int tableID = tableBooking.getTableID();
             String hours = tableBooking.getHours();
@@ -68,7 +63,7 @@ public class Service {
     }
 
     private ArrayList<String> bookingHours(ArrayList<Double> times) {
-        ArrayList<String> hours = new ArrayList<String>(Arrays.asList("4", "4.30", "5", "5.30", "6", "6.30", "7", "7.30", "8", "8.30", "9", "9.30"));
+        ArrayList<String> hours = new ArrayList<String>(Arrays.asList("4.0", "4.3", "5.0", "5.3", "6.0", "6.3", "7.0", "7.3", "8.0", "8.3", "9.0", "9.3"));
         if (times == null) {
            return hours;
         }
@@ -86,22 +81,22 @@ public class Service {
         // Add a half hour offset
         for (Double doubleTimeSlot: times) {
             if ((doubleTimeSlot % 1) == 0) {
-                double halfHourOffsetForward = doubleTimeSlot + .30;
+                double halfHourOffsetForward = doubleTimeSlot + .3;
                 if (halfHourOffsetForward < 9.3) {
                     takenTimes.add(halfHourOffsetForward);
                 }
 
-                double halfHourOffsetBack = doubleTimeSlot - .70;
+                double halfHourOffsetBack = doubleTimeSlot - .7;
                 if (halfHourOffsetBack > 4) {
                     takenTimes.add(halfHourOffsetBack);
                 }
             } else {
-                double halfHourOffsetForward = doubleTimeSlot + .70;
+                double halfHourOffsetForward = doubleTimeSlot + .7;
                 if (halfHourOffsetForward < 9.3) {
                     takenTimes.add(halfHourOffsetForward);
                 }
 
-                double halfHourOffsetBack = doubleTimeSlot - .30;
+                double halfHourOffsetBack = doubleTimeSlot - .3;
                 if (halfHourOffsetBack > 4) {
                     takenTimes.add(halfHourOffsetBack);
                 }
@@ -147,11 +142,10 @@ public class Service {
         return days;
     }
 
-    public void addBooking(Booking booking, BookingInfo bookingInfo) {
+    public String addBooking(Booking booking, BookingInfo bookingInfo) {
 
         repository.addBooking(booking, bookingInfo);
         // Add the date to the booking object
-        bookingInfo.setDate(booking.getDateString());
         // Retrieve the ID for the booking object to put into this table in the database
         int bookingID = repository.retrieveBookingID(booking);
         bookingInfo.setBookingID(bookingID);
@@ -159,12 +153,33 @@ public class Service {
 
         // Add booking Info to database
         repository.addBookingInfo(bookingInfo);
+
+        // Retrieve the Booking ID for the User and Present the Booking Info to the user
+        int bookingTableID;
+        bookingTableID = repository.retrieveBookingTablesID(bookingInfo);
+
+        StringBuilder messageToUser = new StringBuilder();
+        if (bookingTableID > 0) {
+            messageToUser.append("Your Booking Has Successfully been made ");
+            messageToUser.append("You have made you booking for ");
+            messageToUser.append(bookingInfo.getHours() + "pm");
+            messageToUser.append(" on the date: " + bookingInfo.getDate());
+            messageToUser.append(" Your booking number is " + bookingTableID);
+        } else {
+            messageToUser.append("There was a problem making your booking please try again");
+        }
+
+        return messageToUser.toString();
     }
 
-    public BookingWrapper findBooking(int bookingID, String email) {
-       BookingInfo bkInf = repository.findBookingInfo(bookingID);
-       Booking booking = repository.findBooking(email);
-       return null;
+    public BookingInfo findBooking(String email, BookingInfo bookingInfo) {
+       BookingInfo bkInf = repository.findBookingInfo(bookingInfo.getBookingID());
+       int bookingID = repository.verifyBooking(email);
+       if (bookingID == bkInf.getBookingID()) {
+           return bkInf;
+       } else {
+           return null;
+       }
     }
 
     public void modifyBooking(BookingInfo bookingInfo) {
@@ -177,11 +192,44 @@ public class Service {
 
 
     public ArrayList<BookingWrapper> getBookingsByDate(String date) {
-        return repository.findBookings(date);
+        // Finds all the bookings based on the date
+        ArrayList<BookingWrapper> bookingWrappers = new ArrayList<>();
+        ArrayList<BookingInfo> bookingInfos = repository.findBookings(date);
+
+        // for each booking find the customer details
+        for (BookingInfo info: bookingInfos) {
+            BookingWrapper bookingWrapper = new BookingWrapper();
+            bookingWrapper.setBookingInfo(info);
+            bookingWrapper.setBooking(repository.findCustomerDetails(info));
+            bookingWrappers.add(bookingWrapper);
+        }
+        return bookingWrappers;
     }
 
-    public TableLayout getTableLayout(String date) {
+    public ArrayList<Integer> getTableLayout() {
+        String layout = repository.getTableLayout();
+        String[] nums = layout.split(",");
+        ArrayList<String> layoutRaw = new ArrayList<>(Arrays.asList(nums));
+        // Parse the values
+        for (int i = 0; i < layoutRaw.size() - 1; i++) {
+            layoutRaw.set(i, layoutRaw.get(i).substring(1));
+        }
+        String lastItem = layoutRaw.get(layoutRaw.size() - 1);
+        String lastItemFormatted = lastItem.substring(0, lastItem.length() - 1);
+        layoutRaw.set(layoutRaw.size() - 1, lastItemFormatted.substring(1));
 
-        return null;
+        ArrayList<Integer> layoutInt = new ArrayList<>();
+        for (String number: layoutRaw) {
+            layoutInt.add(Integer.parseInt(number));
+        }
+        return layoutInt;
+    }
+
+    public boolean cancelBooking(int id) {
+        return repository.cancelBooking(id);
+    }
+
+    public Boolean postTableLayout(TableLayout tableLayout) {
+        return repository.postTableLayout(tableLayout);
     }
 }

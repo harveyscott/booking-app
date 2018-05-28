@@ -32,18 +32,27 @@ public class Controller {
     }
 
     @RequestMapping(value = "/postBooking", method = RequestMethod.POST)
-    public ResponseEntity postBooking (
+    public String postBooking (
             @RequestBody BookingWrapper body
     ) {
         BookingWrapper bookingWrapper = body.getBookingWrapper();
         Booking booking = bookingWrapper.getBooking();
         BookingInfo bookingInfo = bookingWrapper.getBookingInfo();
-        service.addBooking(booking, bookingInfo);
-        return new ResponseEntity(HttpStatus.CREATED);
+        return service.addBooking(booking, bookingInfo);
+    }
+
+    @RequestMapping(value = "/getBooking", method = RequestMethod.GET)
+    public BookingInfo getBooking(
+            @RequestParam(value = "email") String email,
+            @RequestParam(value = "id") int id
+    ) {
+        BookingInfo bookingInfo = new BookingInfo();
+        bookingInfo.setBookingID(id);
+        return service.findBooking(email, bookingInfo);
     }
 
     // Requires Authentication
-    @RequestMapping(value = "/modifyBooking", method = RequestMethod.POST)
+    @RequestMapping(value = "/modifyBooking", method = RequestMethod.GET)
     public ResponseEntity modifyBooking (
             @RequestBody BookingWrapper request
     ) {
@@ -52,16 +61,23 @@ public class Controller {
        BookingInfo bookingInfo = request.getBookingInfo();
        Booking booking = request.getBookingWrapper().getBooking();
 
-       BookingWrapper currentBooking = service.findBooking(bookingInfo.getBookingID(),booking.getEmail());
+//       BookingWrapper currentBooking = service.findBooking(bookingInfo.getBookingID(),booking.getEmail());
 
        // Validate Booking info
-       if(currentBooking != null)  {
-            service.modifyBooking(bookingInfo);
-       } else {
-           message.append("No Booking returned");
-       }
+//       if(currentBooking != null)  {
+//            service.modifyBooking(bookingInfo);
+//       } else {
+//           message.append("No Booking returned");
+//       }
 
        return null;
+    }
+
+    @RequestMapping(value = "/cancelBooking", method = RequestMethod.GET)
+    public boolean cancelBooking (
+            @RequestParam(value = "id") int id
+            ) {
+        return service.cancelBooking(id);
     }
 
     @RequestMapping(value = "/getBookingsByDate", method = RequestMethod.GET)
@@ -70,17 +86,15 @@ public class Controller {
     }
 
     @RequestMapping(value = "/getTableLayout", method = RequestMethod.GET)
-    public ResponseEntity getTableLayout ( @RequestParam String date) {
-        TableLayout tableLayout = service.getTableLayout(date);
-        tableLayout.getLayout();
-        return null;
+    public ArrayList<Integer> getTableLayout () {
+        return service.getTableLayout();
     }
 
     @RequestMapping(value = "/postTableLayout", method = RequestMethod.POST)
-    public ResponseEntity postTableLayout(
+    public Boolean postTableLayout(
             @RequestBody TableLayout tableLayout
     ) {
-        return null;
+        return service.postTableLayout(tableLayout);
     }
 
     @Autowired

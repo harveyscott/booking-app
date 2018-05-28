@@ -49,10 +49,8 @@ public class BookingInfo {
         return hours;
     }
 
-    public Pair<String, LocalDate> getDate() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd", Locale.ENGLISH);
-        LocalDate localDate = LocalDate.parse(date, formatter);
-        return Pair.of(date, localDate);
+    public String getDate() {
+        return date;
     }
 
 }
